@@ -1,8 +1,14 @@
 public class ParkingTicket {
     private String id;
+    private String parkingLotName;
 
     public ParkingTicket(String number) {
         this.id = number;
+    }
+
+    public ParkingTicket(String id, String parkingLotName) {
+        this.id = id;
+        this.parkingLotName = parkingLotName;
     }
 
     public String getId() {
@@ -10,4 +16,7 @@ public class ParkingTicket {
     }
 
 
+    public String getParkingLotName() {
+        return parkingLotName;
+    }
 }

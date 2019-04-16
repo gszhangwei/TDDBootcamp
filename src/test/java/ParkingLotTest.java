@@ -3,6 +3,9 @@ import exception.NoAvailableException;
 import exception.NoNumberException;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -53,4 +56,25 @@ public class ParkingLotTest {
         Car actualCar = parkingLot.getCar(invalidTicket);
         assertNull(actualCar);
     }
+
+    @Test
+    void should_return_ticket_a_when_park_given_available_position_in_park_lot_a_and_unique_number() throws NoAvailableException {
+        List<ParkingLot> parkingLots = Arrays.asList(new ParkingLot(1, "A"), new ParkingLot(1, "B"));
+        ParkingLotService parkingLotService = new ParkingLotService(parkingLots);
+        ParkingTicket ticket = parkingLotService.park(new Car("A12345"));
+        assertEquals("A12345", ticket.getId());
+        assertEquals("A",ticket.getParkingLotName());
+    }
+
+    @Test
+    void should_return_ticket_b_when_park_given_available_position_in_park_lot_b_and_not_available_position_in_park_lot_a_and_unique_number() throws Exception {
+        final ParkingLot parkingLotA = new ParkingLot(1, "A");
+        parkingLotA.park(new Car("A123"));
+        List<ParkingLot> parkingLots = Arrays.asList(parkingLotA,new ParkingLot(1, "B"));
+        ParkingLotService parkingLotService = new ParkingLotService(parkingLots);
+        ParkingTicket ticket = parkingLotService.park(new Car("A12345"));
+        assertEquals("A12345", ticket.getId());
+        assertEquals("B",ticket.getParkingLotName());
+    }
+
 }

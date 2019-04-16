@@ -7,11 +7,18 @@ import java.util.Map;
 import java.util.Objects;
 
 public class ParkingLot {
+    private String name;
     private int capacity;
     private Map<String, Car> cars;
 
     public ParkingLot(int capacity) {
         this.capacity = capacity;
+        cars = new HashMap<>();
+    }
+
+    public ParkingLot(int capacity, String name) {
+        this.capacity = capacity;
+        this.name = name;
         cars = new HashMap<>();
     }
 
@@ -25,6 +32,18 @@ public class ParkingLot {
 
     public Car getCar(ParkingTicket ticket) {
         return cars.get(ticket.getId());
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public Map<String, Car> getCars() {
+        return cars;
+    }
+
+    public String getName() {
+        return name;
     }
 
     private void validateAvailableLot() throws NoAvailableException {
