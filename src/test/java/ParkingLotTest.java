@@ -1,5 +1,6 @@
 import exception.DuplicatedCarException;
 import exception.NoAvailableException;
+import exception.NoCarException;
 import exception.NoNumberException;
 import org.junit.jupiter.api.Test;
 
@@ -33,32 +34,32 @@ public class ParkingLotTest {
     }
 
     @Test
-    void should_return_null_when_park_given_available_position_and_duplicated_number() throws Exception {
+    void should_throw_duplicated_car_exception_when_park_given_available_position_and_duplicated_number() throws Exception {
         ParkingLot parkingLot = new ParkingLot(2);
         parkingLot.park(new Car("A1123"));
         assertThrows(DuplicatedCarException.class,() -> parkingLot.park(new Car("A1123")));
     }
 
     @Test
-    void should_return_the_car_when_get_car_given_valid_parking_ticket() throws Exception {
+    void should_return_the_car_when_pick_car_given_valid_parking_ticket() throws Exception {
         ParkingLot parkingLot = new ParkingLot(1);
         Car car = new Car("A1123");
         ParkingTicket ticket = parkingLot.park(car);
-        Car actualCar = parkingLot.getCar(ticket);
+        Car actualCar = parkingLot.pick(ticket);
         assertEquals(actualCar, car);
     }
 
     @Test
-    void should_return_null_when_get_car_given_invalid_parking_ticket() throws Exception {
+    void should_return_null_when_pick_car_given_invalid_parking_ticket() throws Exception {
         ParkingLot parkingLot = new ParkingLot(1);
         parkingLot.park(new Car("A1123"));
         ParkingTicket invalidTicket = new ParkingTicket("hack");
-        Car actualCar = parkingLot.getCar(invalidTicket);
+        Car actualCar = parkingLot.pick(invalidTicket);
         assertNull(actualCar);
     }
 
     @Test
-    void should_return_ticket_a_when_park_given_available_position_in_park_lot_a_and_unique_number() throws NoAvailableException {
+    void should_return_ticket_a_when_park_given_available_position_in_park_lot_a_and_unique_number() throws Exception {
         List<ParkingLot> parkingLots = Arrays.asList(new ParkingLot(1, "A"), new ParkingLot(1, "B"));
         ParkingLotService parkingLotService = new ParkingLotService(parkingLots);
         ParkingTicket ticket = parkingLotService.park(new Car("A12345"));
@@ -68,7 +69,7 @@ public class ParkingLotTest {
 
     @Test
     void should_return_ticket_b_when_park_given_available_position_in_park_lot_b_and_not_available_position_in_park_lot_a_and_unique_number() throws Exception {
-        final ParkingLot parkingLotA = new ParkingLot(1, "A");
+        ParkingLot parkingLotA = new ParkingLot(1, "A");
         parkingLotA.park(new Car("A123"));
         List<ParkingLot> parkingLots = Arrays.asList(parkingLotA,new ParkingLot(1, "B"));
         ParkingLotService parkingLotService = new ParkingLotService(parkingLots);
@@ -77,4 +78,58 @@ public class ParkingLotTest {
         assertEquals("B",ticket.getParkingLotName());
     }
 
+    @Test
+    void should_throw_no_number_exception_when_park_given_available_position_in_park_lot_b_and_available_position_in_park_lot_a_and_no_number() throws Exception {
+        List<ParkingLot> parkingLots = Arrays.asList(new ParkingLot(1, "A"), new ParkingLot(1, "B"));
+        ParkingLotService parkingLotService = new ParkingLotService(parkingLots);
+        assertThrows(NoNumberException.class,() -> parkingLotService.park(new Car()));
+    }
+
+    @Test
+    void should_throw_duplicated_car_exception_when_park_given_available_position_in_park_lot_b_and_available_position_in_park_lot_a_and_duplicated_number_in_parking_lot_a() throws Exception {
+        ParkingLot parkingLotA = new ParkingLot(2, "A");
+        parkingLotA.park(new Car("A12345"));
+        List<ParkingLot> parkingLots = Arrays.asList(parkingLotA, new ParkingLot(1, "B"));
+        ParkingLotService parkingLotService = new ParkingLotService(parkingLots);
+        assertThrows(DuplicatedCarException.class,() -> parkingLotService.park(new Car("A12345")));
+    }
+
+    @Test
+    void should_throw_duplicated_car_exception_when_park_given_available_position_in_park_lot_b_and_available_position_in_park_lot_a_and_duplicated_number_in_parking_lot_b() throws Exception {
+        ParkingLot parkingLotB = new ParkingLot(2, "B");
+        parkingLotB.park(new Car("A12345"));
+        List<ParkingLot> parkingLots = Arrays.asList(new ParkingLot(1, "A"), parkingLotB);
+        ParkingLotService parkingLotService = new ParkingLotService(parkingLots);
+        assertThrows(DuplicatedCarException.class,() -> parkingLotService.park(new Car("A12345")));
+    }
+
+    @Test
+    void should_throw_no_available_exception_when_park_given_not_available_position_in_park_lot_b_and_not_available_position_in_park_lot_a_and_unique_number() throws Exception {
+        ParkingLot parkingLotA = new ParkingLot(1, "A");
+        parkingLotA.park(new Car("A123"));
+        ParkingLot parkingLotB = new ParkingLot(1, "B");
+        parkingLotB.park(new Car("A1234"));
+        List<ParkingLot> parkingLots = Arrays.asList(parkingLotA, parkingLotB);
+        ParkingLotService parkingLotService = new ParkingLotService(parkingLots);
+        assertThrows(NoAvailableException.class,() -> parkingLotService.park(new Car("A12345")));
+
+    }
+
+    @Test
+    void should_return_the_right_car_when_pick_car_given_valid_parking_ticket() throws Exception {
+        List<ParkingLot> parkingLots = Arrays.asList(new ParkingLot(1, "A"), new ParkingLot(1, "B"));
+        ParkingLotService parkingLotService = new ParkingLotService(parkingLots);
+        Car car = new Car("A1123");
+        ParkingTicket ticket = parkingLotService.park(car);
+        Car actualCar = parkingLotService.pick(ticket);
+        assertEquals(actualCar, car);
+    }
+
+    @Test
+    void should_throw_no_car_exception_when_pick_car_given_invalid_parking_ticket() throws Exception {
+        List<ParkingLot> parkingLots = Arrays.asList(new ParkingLot(1, "A"), new ParkingLot(1, "B"));
+        ParkingLotService parkingLotService = new ParkingLotService(parkingLots);
+        ParkingTicket invalidTicket = new ParkingTicket("hack", "hack");
+        assertThrows(NoCarException.class, () -> parkingLotService.pick(invalidTicket));
+    }
 }

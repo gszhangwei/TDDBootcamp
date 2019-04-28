@@ -30,7 +30,7 @@ public class ParkingLot {
         return new ParkingTicket(car.getNumber());
     }
 
-    public Car getCar(ParkingTicket ticket) {
+    public Car pick(ParkingTicket ticket) {
         return cars.get(ticket.getId());
     }
 

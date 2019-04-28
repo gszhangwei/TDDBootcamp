@@ -19,4 +19,8 @@ public class ParkingTicket {
     public String getParkingLotName() {
         return parkingLotName;
     }
+
+    public void setParkingLotName(String parkingLotName) {
+        this.parkingLotName = parkingLotName;
+    }
 }
