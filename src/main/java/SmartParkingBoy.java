@@ -15,13 +15,7 @@ public class SmartParkingBoy extends ParkingBoy {
     public ParkingTicket park(Car car) throws Exception {
         ParkingLot firstAvailableParkingLot = getAvailableParkingLotForSmartParking();
         ParkingLotUtils.checkIfDuplicated(car, parkingLots);
-        return getParkingTicket(car, firstAvailableParkingLot);
-    }
-
-    private ParkingTicket getParkingTicket(Car car, ParkingLot firstAvailableParkingLot) throws Exception {
-        ParkingTicket ticket = firstAvailableParkingLot.park(car);
-        ticket.setParkingLotName(firstAvailableParkingLot.getName());
-        return ticket;
+        return ParkingLotUtils.getParkingTicket(car, firstAvailableParkingLot);
     }
 
     private ParkingLot getAvailableParkingLotForSmartParking() throws NoAvailableException {

@@ -14,13 +14,7 @@ public class GraduateParkingBoy extends ParkingBoy {
     public ParkingTicket park(Car car) throws Exception {
         ParkingLot firstAvailableParkingLot = getAvailableParkingLotForGraduateParking();
         ParkingLotUtils.checkIfDuplicated(car, parkingLots);
-        return getParkingTicket(car, firstAvailableParkingLot);
-    }
-
-    private ParkingTicket getParkingTicket(Car car, ParkingLot firstAvailableParkingLot) throws Exception {
-        ParkingTicket ticket = firstAvailableParkingLot.park(car);
-        ticket.setParkingLotName(firstAvailableParkingLot.getName());
-        return ticket;
+        return ParkingLotUtils.getParkingTicket(car, firstAvailableParkingLot);
     }
 
     private ParkingLot getAvailableParkingLotForGraduateParking() throws NoAvailableException {
