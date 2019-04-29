@@ -61,8 +61,8 @@ public class ParkingLotTest {
     @Test
     void should_return_ticket_a_when_park_given_available_position_in_park_lot_a_and_unique_number() throws Exception {
         List<ParkingLot> parkingLots = Arrays.asList(new ParkingLot(1, "A"), new ParkingLot(1, "B"));
-        ParkingLotService parkingLotService = new ParkingLotService(parkingLots);
-        ParkingTicket ticket = parkingLotService.park(new Car("A12345"));
+        GraduateParkingBoy graduateParkingBoy = new GraduateParkingBoy(parkingLots);
+        ParkingTicket ticket = graduateParkingBoy.park(new Car("A12345"));
         assertEquals("A12345", ticket.getId());
         assertEquals("A",ticket.getParkingLotName());
     }
@@ -72,8 +72,8 @@ public class ParkingLotTest {
         ParkingLot parkingLotA = new ParkingLot(1, "A");
         parkingLotA.park(new Car("A123"));
         List<ParkingLot> parkingLots = Arrays.asList(parkingLotA,new ParkingLot(1, "B"));
-        ParkingLotService parkingLotService = new ParkingLotService(parkingLots);
-        ParkingTicket ticket = parkingLotService.park(new Car("A12345"));
+        GraduateParkingBoy graduateParkingBoy = new GraduateParkingBoy(parkingLots);
+        ParkingTicket ticket = graduateParkingBoy.park(new Car("A12345"));
         assertEquals("A12345", ticket.getId());
         assertEquals("B",ticket.getParkingLotName());
     }
@@ -81,8 +81,8 @@ public class ParkingLotTest {
     @Test
     void should_throw_no_number_exception_when_park_given_available_position_in_park_lot_b_and_available_position_in_park_lot_a_and_no_number() throws Exception {
         List<ParkingLot> parkingLots = Arrays.asList(new ParkingLot(1, "A"), new ParkingLot(1, "B"));
-        ParkingLotService parkingLotService = new ParkingLotService(parkingLots);
-        assertThrows(NoNumberException.class,() -> parkingLotService.park(new Car()));
+        GraduateParkingBoy graduateParkingBoy = new GraduateParkingBoy(parkingLots);
+        assertThrows(NoNumberException.class,() -> graduateParkingBoy.park(new Car()));
     }
 
     @Test
@@ -90,8 +90,8 @@ public class ParkingLotTest {
         ParkingLot parkingLotA = new ParkingLot(2, "A");
         parkingLotA.park(new Car("A12345"));
         List<ParkingLot> parkingLots = Arrays.asList(parkingLotA, new ParkingLot(1, "B"));
-        ParkingLotService parkingLotService = new ParkingLotService(parkingLots);
-        assertThrows(DuplicatedCarException.class,() -> parkingLotService.park(new Car("A12345")));
+        GraduateParkingBoy graduateParkingBoy = new GraduateParkingBoy(parkingLots);
+        assertThrows(DuplicatedCarException.class,() -> graduateParkingBoy.park(new Car("A12345")));
     }
 
     @Test
@@ -99,8 +99,8 @@ public class ParkingLotTest {
         ParkingLot parkingLotB = new ParkingLot(2, "B");
         parkingLotB.park(new Car("A12345"));
         List<ParkingLot> parkingLots = Arrays.asList(new ParkingLot(1, "A"), parkingLotB);
-        ParkingLotService parkingLotService = new ParkingLotService(parkingLots);
-        assertThrows(DuplicatedCarException.class,() -> parkingLotService.park(new Car("A12345")));
+        GraduateParkingBoy graduateParkingBoy = new GraduateParkingBoy(parkingLots);
+        assertThrows(DuplicatedCarException.class,() -> graduateParkingBoy.park(new Car("A12345")));
     }
 
     @Test
@@ -110,26 +110,102 @@ public class ParkingLotTest {
         ParkingLot parkingLotB = new ParkingLot(1, "B");
         parkingLotB.park(new Car("A1234"));
         List<ParkingLot> parkingLots = Arrays.asList(parkingLotA, parkingLotB);
-        ParkingLotService parkingLotService = new ParkingLotService(parkingLots);
-        assertThrows(NoAvailableException.class,() -> parkingLotService.park(new Car("A12345")));
+        GraduateParkingBoy graduateParkingBoy = new GraduateParkingBoy(parkingLots);
+        assertThrows(NoAvailableException.class,() -> graduateParkingBoy.park(new Car("A12345")));
 
     }
 
     @Test
     void should_return_the_right_car_when_pick_car_given_valid_parking_ticket() throws Exception {
         List<ParkingLot> parkingLots = Arrays.asList(new ParkingLot(1, "A"), new ParkingLot(1, "B"));
-        ParkingLotService parkingLotService = new ParkingLotService(parkingLots);
+        GraduateParkingBoy graduateParkingBoy = new GraduateParkingBoy(parkingLots);
         Car car = new Car("A1123");
-        ParkingTicket ticket = parkingLotService.park(car);
-        Car actualCar = parkingLotService.pick(ticket);
+        ParkingTicket ticket = graduateParkingBoy.park(car);
+        Car actualCar = graduateParkingBoy.pick(ticket);
         assertEquals(actualCar, car);
     }
 
     @Test
-    void should_throw_no_car_exception_when_pick_car_given_invalid_parking_ticket() throws Exception {
+    void should_throw_no_car_exception_when_pick_car_given_invalid_parking_ticket() {
         List<ParkingLot> parkingLots = Arrays.asList(new ParkingLot(1, "A"), new ParkingLot(1, "B"));
-        ParkingLotService parkingLotService = new ParkingLotService(parkingLots);
+        GraduateParkingBoy graduateParkingBoy = new GraduateParkingBoy(parkingLots);
         ParkingTicket invalidTicket = new ParkingTicket("hack", "hack");
-        assertThrows(NoCarException.class, () -> parkingLotService.pick(invalidTicket));
+        assertThrows(NoCarException.class, () -> graduateParkingBoy.pick(invalidTicket));
+    }
+
+    @Test
+    void should_return_ticket_a_when_park_car_given_available_position_in_park_lot_b_and_and_available_position_more_than_park_lot_a_and_unique() throws Exception {
+        final ParkingLot parkingLotA = new ParkingLot(1, "A");
+        final ParkingLot parkingLotB = new ParkingLot(2, "B");
+        SmartParkingBoy smartParkingBoy = new SmartParkingBoy(Arrays.asList(parkingLotA, parkingLotB));
+        ParkingTicket ticket = smartParkingBoy.park(new Car("A12345"));
+        assertEquals("A12345", ticket.getId());
+        assertEquals("B",ticket.getParkingLotName());
+    }
+
+    @Test
+    void should_return_ticket_b_when_smart_park_given_available_position_in_park_lot_b_and_not_available_position_in_park_lot_a_and_unique_number() throws Exception {
+        ParkingLot parkingLotA = new ParkingLot(1, "A");
+        parkingLotA.park(new Car("A123"));
+        List<ParkingLot> parkingLots = Arrays.asList(parkingLotA,new ParkingLot(1, "B"));
+        SmartParkingBoy smartParkingBoy = new SmartParkingBoy(parkingLots);
+        ParkingTicket ticket = smartParkingBoy.park(new Car("A12345"));
+        assertEquals("A12345", ticket.getId());
+        assertEquals("B",ticket.getParkingLotName());
+    }
+
+    @Test
+    void should_throw_no_number_exception_when_smart_park_given_available_position_in_park_lot_b_and_available_position_in_park_lot_a_and_no_number() throws Exception {
+        List<ParkingLot> parkingLots = Arrays.asList(new ParkingLot(1, "A"), new ParkingLot(1, "B"));
+        SmartParkingBoy smartParkingBoy = new SmartParkingBoy(parkingLots);
+        assertThrows(NoNumberException.class,() -> smartParkingBoy.park(new Car()));
+    }
+
+    @Test
+    void should_throw_duplicated_car_exception_when_smart_park_given_available_position_in_park_lot_b_and_available_position_in_park_lot_a_and_duplicated_number_in_parking_lot_a() throws Exception {
+        ParkingLot parkingLotA = new ParkingLot(2, "A");
+        parkingLotA.park(new Car("A12345"));
+        List<ParkingLot> parkingLots = Arrays.asList(parkingLotA, new ParkingLot(1, "B"));
+        SmartParkingBoy smartParkingBoy = new SmartParkingBoy(parkingLots);
+        assertThrows(DuplicatedCarException.class,() -> smartParkingBoy.park(new Car("A12345")));
+    }
+
+    @Test
+    void should_throw_duplicated_car_exception_when_smart_park_given_available_position_in_park_lot_b_and_available_position_in_park_lot_a_and_duplicated_number_in_parking_lot_b() throws Exception {
+        ParkingLot parkingLotB = new ParkingLot(2, "B");
+        parkingLotB.park(new Car("A12345"));
+        List<ParkingLot> parkingLots = Arrays.asList(new ParkingLot(1, "A"), parkingLotB);
+        SmartParkingBoy smartParkingBoy = new SmartParkingBoy(parkingLots);
+        assertThrows(DuplicatedCarException.class,() -> smartParkingBoy.park(new Car("A12345")));
+    }
+
+    @Test
+    void should_throw_no_available_exception_when_smart_park_given_not_available_position_in_park_lot_b_and_not_available_position_in_park_lot_a_and_unique_number() throws Exception {
+        ParkingLot parkingLotA = new ParkingLot(1, "A");
+        parkingLotA.park(new Car("A123"));
+        ParkingLot parkingLotB = new ParkingLot(1, "B");
+        parkingLotB.park(new Car("A1234"));
+        List<ParkingLot> parkingLots = Arrays.asList(parkingLotA, parkingLotB);
+        SmartParkingBoy smartParkingBoy = new SmartParkingBoy(parkingLots);
+        assertThrows(NoAvailableException.class,() -> smartParkingBoy.park(new Car("A12345")));
+
+    }
+
+    @Test
+    void should_return_the_right_car_when_smart_pick_car_given_valid_parking_ticket() throws Exception {
+        List<ParkingLot> parkingLots = Arrays.asList(new ParkingLot(1, "A"), new ParkingLot(1, "B"));
+        SmartParkingBoy smartParkingBoy = new SmartParkingBoy(parkingLots);
+        Car car = new Car("A1123");
+        ParkingTicket ticket = smartParkingBoy.park(car);
+        Car actualCar = smartParkingBoy.pick(ticket);
+        assertEquals(actualCar, car);
+    }
+
+    @Test
+    void should_throw_no_car_exception_when_smart_pick_car_given_invalid_parking_ticket() {
+        List<ParkingLot> parkingLots = Arrays.asList(new ParkingLot(1, "A"), new ParkingLot(1, "B"));
+        SmartParkingBoy smartParkingBoy = new SmartParkingBoy(parkingLots);
+        ParkingTicket invalidTicket = new ParkingTicket("hack", "hack");
+        assertThrows(NoCarException.class, () -> smartParkingBoy.pick(invalidTicket));
     }
 }
